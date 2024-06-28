@@ -45,17 +45,23 @@ class CalculatorProvider with ChangeNotifier {
   // Method to evaluate mathematical expression
   double _evaluate(String expression) {
     try {
+      // Using dart:math to evaluate the expression
       expression = expression.replaceAll('X', '*');
-      RegExp numRegExp = RegExp(r'\d+(\.\d+)?');
-      RegExp opRegExp = RegExp(r'[\+\-\*\/]');
 
+      // Creating a RegExp to match mathematical operators
+      RegExp numRegExp = RegExp(r'\d+(\.\d+)?');
+      RegExp opRegExp = RegExp(r'[\+\-\*\/%]');
+
+      // Splitting the expression into numbers and operators
       List<String> numbers =
           numRegExp.allMatches(expression).map((m) => m.group(0)!).toList();
       List<String> ops =
           opRegExp.allMatches(expression).map((m) => m.group(0)!).toList();
 
+      // Initializing result with the first number
       double result = double.parse(numbers[0]);
 
+      // Performing operations
       for (int i = 0; i < ops.length; i++) {
         double nextNumber = double.parse(numbers[i + 1]);
         switch (ops[i]) {
@@ -74,12 +80,16 @@ class CalculatorProvider with ChangeNotifier {
             }
             result /= nextNumber;
             break;
+          case '%':
+            result %= nextNumber;
+            break;
           default:
             throw Exception('Invalid operator');
         }
       }
       return result;
     } catch (e) {
+      // Handle errors, e.g., division by zero or invalid expressions
       throw Exception('Error evaluating expression: $e');
     }
   }
